@@ -2,7 +2,7 @@
 //==================
 //PUERTO
 //==================
-process.env.PORT = process.env.PORT || 8080;
+process.env.PORT = process.env.PORT || 3001;
 
 
 //==================
@@ -11,6 +11,22 @@ process.env.PORT = process.env.PORT || 8080;
 
 //para saber si estoy en desarrollo o en produccion:
 process.env.NODE_ENV = process.env.NODE_ENV || "dev";
+
+//==================
+//Vencimiento del Token
+//==================
+//60 segundos
+//60 minutos
+//24 horas
+//30 días
+process.env.CADUCIDAD_TOKEN = 60 * 60 * 24 * 30; // creo la variable de configuracion
+
+
+//==================
+//SEED de autentificacion
+//==================
+process.env.SEED = process.env.SEED || "secret-seed-desarrollo"; // la variable en heroku es el seed y si no esta creada entonces es "secret"
+
 
 //==================
 //Base de datos

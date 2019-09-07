@@ -5,6 +5,7 @@
 
 const express = require("express");
 const Usuario = require("../models/usuario");
+const { verificaToken, verificaAdmin_Role } = require("../middlewares/autentificacion");
 const bcrypt = require("bcrypt");
 const _ = require("underscore");
 const app = express();
@@ -12,7 +13,15 @@ const app = express();
 
 
 //tipos de peticiones
-app.get("/usuarios", (req, res) => {
+//verificaToken siempre se ejecuta cuando se ejecute la peticion get, ya que los middleware siempre se ejecutan
+app.get("/usuarios", verificaToken, (req, res) => {
+
+    // //el usuario que esta haciendo la verificacion
+    // return res.json({
+    //     usuario: req.usuario,
+    //     nombre: req.usuario.nombre,
+    //     email: req.usuario.email
+    // })
 
     //esta linea guarda los parametros opcionales//van despues de este signo ? en el url; ej: localhost:8080/usuarios?desde=5
     let desde = req.query.desde || 0; //query es donde caen los parametros opcionales en el req y puedo suponer que vendra un variable desde
@@ -46,7 +55,9 @@ app.get("/usuarios", (req, res) => {
 
 
 //peticion post es para crear nuevos registros
-app.post("/usuarios", (req, res) => {
+app.post("/usuarios", [verificaToken, verificaAdmin_Role], (req, res) => {
+
+
 
     let body = req.body; //ese body aprece cuando el bodyParse procese cualquier payload que reciban las peticiones
 
@@ -77,10 +88,14 @@ app.post("/usuarios", (req, res) => {
             usuario: usuarioDB
         });
     })
+
+
+
+
 })
 
 //peticion put para actualizar los registrso de usuario
-app.put("/usuarios/:id", (req, res) => {
+app.put("/usuarios/:id", [verificaToken, verificaAdmin_Role], (req, res) => {
 
     let id = req.params.id; //solicita (req) los parametros y busca el de id
     let body = _.pick(req.body, ["nombre", "email", "img", "role", "estado"]); //pick una funcion de la libreria underscore filtra un objeto y solo acepta las propiedades que yo decido en el arreglo
@@ -110,7 +125,10 @@ app.put("/usuarios/:id", (req, res) => {
 })
 
 //peticion de delete; ya no se acostumbra a borrar registro, si no cambiar el estado de un elemento (ej: disponible/nodisponible)
-app.delete("/usuarios/:id", (req, res) => {
+app.delete("/usuarios/:id", [verificaToken, verificaAdmin_Role], (req, res) => {
+
+
+
 
     let id = req.params.id;
     let cambiarEstado = {
